@@ -12,7 +12,7 @@ class MainWindow(tk.Frame):
         self._image_path = None
         self._mask_path = None
         self._report_path = None
-        self._config = config_service.load()
+        self._config_service = config_service
 
         tk.Button(self, text="Выбрать КТ снимок", command=self._select_image).pack(pady=5)
         tk.Button(self, text="Выбрать маску", command=self._select_mask).pack(pady=5)
@@ -38,10 +38,11 @@ class MainWindow(tk.Frame):
     def run(self):
         if not self._validate_all_paths_filled():
             return
+        
+        config = self._config_service.load()
+        result = run_processing(self._image_path, self._mask_path, config)
 
-        result = run_processing(self._image_path, self._mask_path, self._config)
-
-        generate_pdf(result, self._report_path, self._config)
+        generate_pdf(result, self._report_path, config)
 
         os.startfile(self._report_path)
     

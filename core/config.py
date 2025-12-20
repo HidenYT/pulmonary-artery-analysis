@@ -6,11 +6,11 @@ CONFIG_PATH = Path("data/config.json")
 
 
 class Config(BaseModel):
-    pixels_in_mm: float = 1
-    width_main_mm: float = 100
-    width_left_mm: float = 100
-    width_right_mm: float = 100
-    diff_mm: float = 5
+    pixels_in_mm: float = 1.7
+    width_main_mm: float = 27
+    width_left_mm: float = 27
+    width_right_mm: float = 27
+    diff_mm: float = 1
 
     doctor_full_name: str = ""
 

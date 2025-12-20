@@ -69,7 +69,7 @@ def find_width_points_for_artery(artery_segment_coordinates: np.ndarray) -> tupl
             continue
         p1 = cast_until_boundary(image_8bit, (x, y), direction)
         p2 = cast_until_boundary(image_8bit, (x, y), -direction)
-        if p1 is None or p2 is None:
+        if p1 is None or None in p1 or p2 is None or None in p2:
             continue
         diameter = np.linalg.norm(np.array(p1) - np.array(p2))
         if diameter > max_diameter:

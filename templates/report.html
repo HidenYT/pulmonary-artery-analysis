@@ -13,24 +13,28 @@
     <ul>
         <li>
             <strong>Основная артерия</strong><br>
-            Диаметр: {{ report_data.main_artery.d }} мм<br>
-            Проблема: {{ 'Да' if report_data.main_artery.problem else 'Нет' }}
+            Диаметр:
+            <span style="color: {{ 'red' if report_data.main_artery.problem else 'black' }}">
+                {{ "%.2f"|format(report_data.main_artery.d) }} мм
+            </span>
         </li>
 
         <li>
             <strong>Левая артерия</strong><br>
-            Диаметр: {{ report_data.left_artery.d }} мм<br>
-            Проблема: {{ 'Да' if report_data.left_artery.problem else 'Нет' }}
+            Диаметр:
+            <span style="color: {{ 'red' if report_data.left_artery.problem else 'black' }}">
+                {{ "%.2f"|format(report_data.left_artery.d) }} мм
+            </span>
         </li>
 
         <li>
             <strong>Правая артерия</strong><br>
-            Диаметр: {{ report_data.right_artery.d }} мм<br>
-            Проблема: {{ 'Да' if report_data.right_artery.problem else 'Нет' }}
+            Диаметр:
+            <span style="color: {{ 'red' if report_data.right_artery.problem else 'black' }}">
+                {{ "%.2f"|format(report_data.right_artery.d) }} мм
+            </span>
         </li>
     </ul>
-
-
 
     <img src="data:image/png;base64,{{ report_data.image_b64 }}" />
 

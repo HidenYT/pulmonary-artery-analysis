@@ -90,7 +90,6 @@ def find_arteries(mask_points: np.ndarray) -> np.ndarray:
 def find_arteries_d(mask: Image.Image) -> CVResult:
     mask_points = find_mask_points(mask)
     clusters = find_arteries(mask_points)
-    
 
     cluster_centers = []
     for i in range(3):
@@ -102,8 +101,8 @@ def find_arteries_d(mask: Image.Image) -> CVResult:
     for i in range(3):
         point_pairs.append(find_width_points_for_artery(mask_points[clusters==i]))
 
-    left_d_idx = np.argmin(cluster_centers[:, 0])
-    main_d_idx = np.argmax(cluster_centers[:, 1])
+    left_d_idx = np.argmin(cluster_centers[:, 1])
+    main_d_idx = np.argmin(cluster_centers[:, 0])
     left_d = point_pairs[left_d_idx]
     main_d = point_pairs[main_d_idx]
     for i in range(3):

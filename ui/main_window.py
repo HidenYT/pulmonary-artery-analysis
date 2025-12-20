@@ -2,9 +2,9 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 import os
 
-from core.config import Config, ConfigService
+from core.config import ConfigService
 from core.processor import run_processing
-from core.report import generate_pdf
+from report_generation.report import generate_pdf
 
 class MainWindow(tk.Frame):
     def __init__(self, master, config_service: ConfigService):

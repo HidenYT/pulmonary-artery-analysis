@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../assets/style.css">
+    <title>Отчёт КТ лёгких</title>
+</head>
+<body>
+    <h1>Отчёт по КТ исследованию лёгких</h1>
+
+    <p>Врач: {{ report_data.doctor_full_name }}</p>
+    <p>Результаты анализа:</p>
+    <ul>
+        <li>
+            <strong>Основная артерия</strong><br>
+            Диаметр: {{ report_data.main_artery.d }} мм<br>
+            Проблема: {{ 'Да' if report_data.main_artery.problem else 'Нет' }}
+        </li>
+
+        <li>
+            <strong>Левая артерия</strong><br>
+            Диаметр: {{ report_data.left_artery.d }} мм<br>
+            Проблема: {{ 'Да' if report_data.left_artery.problem else 'Нет' }}
+        </li>
+
+        <li>
+            <strong>Правая артерия</strong><br>
+            Диаметр: {{ report_data.right_artery.d }} мм<br>
+            Проблема: {{ 'Да' if report_data.right_artery.problem else 'Нет' }}
+        </li>
+    </ul>
+
+
+
+    <img src="data:image/png;base64,{{ report_data.image_b64 }}" />
+
+</body>
+</html>

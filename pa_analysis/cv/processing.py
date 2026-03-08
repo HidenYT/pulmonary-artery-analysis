@@ -79,7 +79,7 @@ def find_width_points_for_artery(artery_segment_coordinates: np.ndarray) -> tupl
 
 
 def find_mask_points(mask: Image.Image) -> np.ndarray:
-    return np.array(np.where(np.array([mask]) == 255)[1:]).T
+    return np.array(np.where(np.array([mask]) == 1)[1:]).T
 
 
 def find_arteries(mask_points: np.ndarray) -> np.ndarray:

@@ -7,27 +7,27 @@ from core.processor import run_processing
 from report_generation.report import generate_pdf
 
 class MainWindow(tk.Frame):
-    def __init__(self, master, config_service: ConfigService):
+    def __init__(self, master, config_service: ConfigService, classifier, segmentator, device):
         super().__init__(master)
         self._image_path = None
-        self._mask_path = None
         self._report_path = None
         self._config_service = config_service
+        self._classifier = classifier
+        self._segmentator = segmentator
+        self._device = device
 
-        tk.Button(self, text="Выбрать КТ снимок", command=self._select_image).pack(pady=5)
-        tk.Button(self, text="Выбрать маску", command=self._select_mask).pack(pady=5)
+        tk.Button(self, text="Выбрать КТ снимок (NRRD)", command=self._select_nrrd_image).pack(pady=5)
+        tk.Button(self, text="Выбрать КТ снимок (DICOM)", command=self._select_dicom_image).pack(pady=5)
         tk.Button(self, text="Сохранить в", command=self._select_report_save_path).pack(pady=5)
         tk.Button(self, text="Запуск", command=self.run).pack(pady=20)
 
-    def _select_image(self):
+    def _select_nrrd_image(self):
         self._image_path = filedialog.askopenfilename(
-            filetypes=[("Images", "*.png *.jpg")]
+            filetypes=[("Nrrd files", "*.nrrd")]
         )
 
-    def _select_mask(self):
-        self._mask_path = filedialog.askopenfilename(
-            filetypes=[("Images", "*.png *.jpg")]
-        )
+    def _select_dicom_image(self):
+        self._image_path = filedialog.askdirectory()
 
     def _select_report_save_path(self):
         self._report_path = filedialog.asksaveasfilename(
@@ -40,7 +40,7 @@ class MainWindow(tk.Frame):
             return
         
         config = self._config_service.load()
-        result = run_processing(self._image_path, self._mask_path, config)
+        result = run_processing(self._image_path, config, self._classifier, self._segmentator, self._device)
 
         generate_pdf(result, self._report_path, config)
 
@@ -49,9 +49,7 @@ class MainWindow(tk.Frame):
     def _validate_all_paths_filled(self) -> bool:
         error_paths = []
         if not self._image_path:
-            error_paths.append("изображение")
-        if not self._mask_path:
-            error_paths.append("маска")
+            error_paths.append("снимок")
         if not self._report_path:
             error_paths.append("отчёт")
         if not error_paths:

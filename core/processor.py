@@ -48,7 +48,7 @@ def run_processing(image_path: str, config: Config, classifier, segmentator, dev
         processed.append((idx, clean))
 
     slice_idx, best_mask = find_largest_mask(processed)
-    cv_result = find_arteries_d(best_mask)
+    cv_result = find_arteries_d(best_mask, config)
     img_to_show = window_level(volume[slice_idx], 2000, 0)
     img_to_show = normalize_image(img_to_show) * 255
     vis = cv.cvtColor(np.uint8(img_to_show), cv.COLOR_RGB2BGR)

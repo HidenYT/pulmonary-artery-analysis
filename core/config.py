@@ -11,6 +11,8 @@ class Config(BaseModel):
     width_left_mm: float = 27
     width_right_mm: float = 27
     diff_mm: float = 1
+    normal_vector_window_sz: int = 10
+    skeleton_edge_points_remove_ratio: float = 0.5
 
     doctor_full_name: str = ""
 

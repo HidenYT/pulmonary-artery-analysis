@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from pydantic import BaseModel, computed_field
+from pydantic import BaseModel, Field, computed_field
 
 CONFIG_PATH = Path("data/config.json")
 
@@ -11,10 +11,10 @@ class Config(BaseModel):
     width_left_mm: float = 27
     width_right_mm: float = 27
     diff_mm: float = 1
-    normal_vector_window_sz: int = 10
-    skeleton_edge_points_remove_ratio: float = 0.5
+    normal_vector_window_sz: int = Field(10, description="Окно вычисления вектора диаметра артерии")
+    skeleton_edge_points_remove_ratio: float = Field(0.5, description="Доля удаляемых крайних точек скелета артерии")
 
-    doctor_full_name: str = ""
+    doctor_full_name: str = Field("", description="Имя врача")
 
     @computed_field
     @property

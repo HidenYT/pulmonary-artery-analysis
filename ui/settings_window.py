@@ -6,10 +6,15 @@ class SettingsWindow(tk.Toplevel):
         super().__init__(master)
         self._config_service = config_service
         self.entries = {}
-        config = config_service.load().model_dump(exclude_computed_fields=True)
+        config_model = config_service.load()
+        config_dict = config_model.model_dump(exclude_computed_fields=True)
 
-        for key, value in config.items():
-            tk.Label(self, text=key).pack()
+        for key, value in config_dict.items():
+            field_name = key
+            description = Config.model_fields[key].description
+            if description is not None:
+                field_name = description
+            tk.Label(self, text=field_name).pack()
             entry = tk.Entry(self)
             entry.insert(0, str(value))
             entry.pack()

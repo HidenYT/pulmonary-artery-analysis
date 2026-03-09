@@ -113,13 +113,12 @@ def find_arteries_d(mask: Image.Image, config: Config) -> CVResult:
         point_pairs.append(find_width_points_for_artery(artery_points, normal_vec_window_sz=config.normal_vector_window_sz, edge_points_remove_ratio=config.skeleton_edge_points_remove_ratio))
     cluster_centers = np.array(cluster_centers)
 
-    left_d_idx = np.argmin(cluster_centers[:, 1])
+    right_d_idx = np.argmin(cluster_centers[:, 1])
     main_d_idx = np.argmin(cluster_centers[:, 0])
+    left_d_idx = list(set(range(3)) - {int(right_d_idx), int(main_d_idx)})[0]
     left_d = point_pairs[left_d_idx]
     main_d = point_pairs[main_d_idx]
-    for i in range(3):
-        if i not in (left_d_idx, main_d_idx):
-            right_d = point_pairs[i]
-            break
+    right_d = point_pairs[right_d_idx]
+    
     return CVResult(main_artery_points=main_d, left_artery_points=left_d, right_artery_points=right_d)
     

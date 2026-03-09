@@ -8,7 +8,7 @@ from utils.image_reader.models import ImageMeta
 
 
 def make_postanalysis(cv_result: CVResult, config: Config, meta: ImageMeta) -> PostAnalysisResult:
-    pixel_to_mm_multiplier = np.array(meta.spacing[1:])[::-1]  # z, y, x -> x, y
+    pixel_to_mm_multiplier = np.array(meta.spacing[:2])  # x, y, z -> x, y
 
     main_1, main_2 = cv_result.main_artery_points
     main_d_mm = np.linalg.norm((main_1 - main_2) * pixel_to_mm_multiplier)

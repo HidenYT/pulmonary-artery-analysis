@@ -4,9 +4,11 @@ from sklearn.cluster import KMeans
 import numpy as np
 
 from skimage.morphology import skeletonize, medial_axis
+from scipy.ndimage import gaussian_filter
 
 from core.config import Config
 from pa_analysis.entity import CVResult
+import matplotlib.pyplot as plt
 
 
 def get_normal_unit_vec(points, index, window_sz=5):
@@ -45,6 +47,7 @@ def remove_edge_skeleton_points(skeleton_coordinates, remove_rate):
 
 
 def find_artery_skeleton_coordinates(mask):
+    mask = gaussian_filter(mask, sigma=1) > 0
     skeleton = skeletonize(mask)
     skeleton_graph = csr.Skeleton(skeleton)
     paths = skeleton_graph.paths_list()
@@ -57,7 +60,7 @@ def find_width_points_for_artery(artery_segment_coordinates: np.ndarray, normal_
     points_centered = artery_segment_coordinates
     inc = points_centered.min(axis=0)
     points_centered -= inc
-    mesh = np.zeros((points_centered[:, 0].max()+1, points_centered[:, 1].max()+1), dtype=np.float32)
+    mesh = np.zeros((points_centered.max(axis=0)+1), dtype=np.float32)
     for point in points_centered:
         mesh[*point] = 1
 
@@ -90,14 +93,17 @@ def find_mask_points(mask: Image.Image) -> np.ndarray:
     return np.array(np.where(np.array([mask]) == 1)[1:]).T
 
 
-def find_arteries(mask_points: np.ndarray) -> np.ndarray:
-    kmeans = KMeans(3, n_init=5)
+def find_arteries(mask_points: np.ndarray, mask_shape: np.ndarray) -> np.ndarray:
+    main_artery_init = [0, mask_shape[1]]
+    left_artery_init = mask_shape
+    right_artery_init = [mask_shape[0], 0]
+    kmeans = KMeans(3, init=[main_artery_init, left_artery_init, right_artery_init])
     return kmeans.fit_predict(mask_points)
 
 
 def find_arteries_d(mask: Image.Image, config: Config) -> CVResult:
     mask_points = find_mask_points(mask)
-    clusters = find_arteries(mask_points)
+    clusters = find_arteries(mask_points, mask.shape)
 
     cluster_centers = []
     point_pairs = []

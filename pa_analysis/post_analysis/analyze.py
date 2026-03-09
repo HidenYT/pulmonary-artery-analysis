@@ -4,32 +4,29 @@ import numpy as np
 
 from core.config import Config
 from pa_analysis.entity import CVResult, PostAnalysisResult
+from utils.image_reader.models import ImageMeta
 
 
-def make_postanalysis(cv_result: CVResult, config: Config) -> PostAnalysisResult:
+def make_postanalysis(cv_result: CVResult, config: Config, meta: ImageMeta) -> PostAnalysisResult:
+    pixel_to_mm_multiplier = np.array(meta.spacing[1:])[::-1]  # z, y, x -> x, y
+
     main_1, main_2 = cv_result.main_artery_points
-    main_d = np.sqrt(np.sum((main_1-main_2)**2))
-    main_problem = False
-    if not (config.width_main_px - config.diff_px <= main_d <= config.width_main_px + config.diff_px):
-        main_problem = True
+    main_d_mm = np.linalg.norm((main_1 - main_2) * pixel_to_mm_multiplier)
+    main_problem = not(config.width_main_mm - config.diff_mm <= main_d_mm <= config.width_main_mm + config.diff_mm)
     
     left_1, left_2 = cv_result.left_artery_points
-    left_d = np.sqrt(np.sum((left_1-left_2)**2))
-    left_problem = False
-    if not (config.width_left_px - config.diff_px <= left_d <= config.width_left_px + config.diff_px):
-        left_problem = True
+    left_d_mm = np.linalg.norm((left_1 - left_2) * pixel_to_mm_multiplier)
+    left_problem = not(config.width_left_mm - config.diff_mm <= left_d_mm <= config.width_left_mm + config.diff_mm)
     
     right_1, right_2 = cv_result.right_artery_points
-    right_d = np.sqrt(np.sum((right_1-right_2)**2))
-    right_problem = False
-    if not (config.width_right_px - config.diff_px <= right_d <= config.width_right_px + config.diff_px):
-        right_problem = True
+    right_d_mm = np.linalg.norm((right_1 - right_2) * pixel_to_mm_multiplier)
+    right_problem = not(config.width_right_mm - config.diff_mm <= right_d_mm <= config.width_right_mm + config.diff_mm)
 
     return PostAnalysisResult(
-        main_artery_d=main_d,
+        main_artery_d=main_d_mm,
         main_artery_problem=main_problem,
-        left_artery_d=left_d,
+        left_artery_d=left_d_mm,
         left_artery_problem=left_problem,
-        right_artery_d=right_d,
+        right_artery_d=right_d_mm,
         right_artery_problem=right_problem,
     )

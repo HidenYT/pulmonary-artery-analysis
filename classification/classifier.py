@@ -1,21 +1,19 @@
 import torch
 from classification.preprocessing import preprocess_for_classifier
-import matplotlib.pyplot as plt
+import numpy as np
+
+from classification.utils import keep_longest_run
 
 
 def classify_slices(volume, model, device, threshold=0.5):
-
     positive_indices = []
-
+    predictions = []
     with torch.no_grad():
-
-        for i, slice_img in enumerate(volume):
+        for slice_img in volume:
             inp = preprocess_for_classifier(slice_img).to(device)
-
             logits = model(inp)
             pred = torch.sigmoid(logits) > threshold
+            predictions.append(bool(pred))
 
-            if pred:
-                positive_indices.append(i)
-
-    return positive_indices
+    positive_indices = keep_longest_run(torch.tensor(predictions))
+    return torch.argwhere(positive_indices)

@@ -30,9 +30,10 @@ def run_processing(image_path: str, config: Config, classifier, segmentator, dev
     positive_slices = classify_slices(
         volume,
         classifier,
-        device
+        device,
+        threshold=config.classification_threshold,
     )
-    if not positive_slices:
+    if len(positive_slices) == 0:
         return None
     masks = segment_slices(
         volume,
@@ -56,5 +57,5 @@ def run_processing(image_path: str, config: Config, classifier, segmentator, dev
     cv.line(vis, *cv_result.left_artery_points, (0, 0, 255), 1)
     cv.line(vis, *cv_result.right_artery_points, (0, 0, 255), 1)
     img = Image.fromarray(cv.cvtColor(vis, cv.COLOR_BGR2RGB))
-    post_analysis_result = make_postanalysis(cv_result, config)
+    post_analysis_result = make_postanalysis(cv_result, config, meta)
     return ScanFullAnalysisResult(postanalysis_result=post_analysis_result, result_image=img)

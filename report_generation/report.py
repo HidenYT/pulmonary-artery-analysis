@@ -45,15 +45,15 @@ def generate_pdf(result: ScanFullAnalysisResult, output_pdf: str, config: Config
 def prepare_report_data(result: ScanFullAnalysisResult, config: Config, img_b64: str) -> ReportData:
     return ReportData(
         main_artery=ReportArteryData(
-            d=result.postanalysis_result.main_artery_d/config.pixels_in_mm,
+            d=result.postanalysis_result.main_artery_d,
             problem=result.postanalysis_result.main_artery_problem,
         ),
         left_artery=ReportArteryData(
-            d=result.postanalysis_result.left_artery_d/config.pixels_in_mm,
+            d=result.postanalysis_result.left_artery_d,
             problem=result.postanalysis_result.left_artery_problem,
         ),
         right_artery=ReportArteryData(
-            d=result.postanalysis_result.right_artery_d/config.pixels_in_mm,
+            d=result.postanalysis_result.right_artery_d,
             problem=result.postanalysis_result.right_artery_problem,
         ),
         doctor_full_name=config.doctor_full_name,

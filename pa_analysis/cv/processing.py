@@ -3,7 +3,7 @@ from PIL import Image
 from sklearn.cluster import KMeans
 import numpy as np
 
-from skimage.morphology import skeletonize
+from skimage.morphology import skeletonize, medial_axis
 
 from core.config import Config
 from pa_analysis.entity import CVResult
@@ -27,9 +27,7 @@ def get_normal_unit_vec(points, index, window_sz=5):
 
 def cast_until_boundary(mask, origin, direction, max_length=100):
     h, w = mask.shape
-    ox, oy = prevx, prevy = origin
-    x = None
-    y = None
+    ox, oy = prevx, prevy = x, y = origin
     for i in range(1, max_length):
         prevx = x
         prevy = y
@@ -79,7 +77,7 @@ def find_diameter_from_skeleton(mask, skeleton_coords, window_sz=10) -> tuple:
             continue
         p1 = cast_until_boundary(mask, (x, y), direction)
         p2 = cast_until_boundary(mask, (x, y), -direction)
-        if p1 is None or None in p1 or p2 is None or None in p2:
+        if p1 is None or p2 is None:
             continue
         diameter = np.linalg.norm(np.array(p1) - np.array(p2))
         if diameter > max_diameter:

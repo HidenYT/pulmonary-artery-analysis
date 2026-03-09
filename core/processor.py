@@ -8,21 +8,16 @@ from pa_analysis.cv.processing import find_arteries_d
 from pa_analysis.post_analysis.analyze import make_postanalysis
 from pa_analysis.entity import PostAnalysisResult
 from utils.cv import normalize_image, window_level
+from utils.image_reader.image_reader import read_medical_image
+from classification.classifier import classify_slices
+from segmentation.segmentator import segment_slices
+from segmentation.postprocessing import clean_mask, find_largest_mask
 
 
 @dataclass
 class ScanFullAnalysisResult:
     postanalysis_result: PostAnalysisResult
     result_image: Image.Image
-
-
-import numpy as np
-
-from utils.image_reader.image_reader import read_medical_image
-from classification.classifier import classify_slices
-from segmentation.segmentator import segment_slices
-from segmentation.postprocessing import clean_mask, find_largest_mask
-
 
 
 def run_processing(image_path: str, config: Config, classifier, segmentator, device) -> ScanFullAnalysisResult:

@@ -41,10 +41,17 @@ def cast_until_boundary(mask, origin, direction, max_length=100):
     return None
 
 
-def remove_edge_skeleton_points(skeleton_coordinates, remove_rate):
+def remove_edge_skeleton_points_from_pivot(skeleton_coordinates, pivot, remove_rate):
     remove_1_side = remove_rate/2
     remove_1_side_n = int(len(skeleton_coordinates) * remove_1_side)
-    return skeleton_coordinates[remove_1_side_n:-remove_1_side_n]
+    sorted_coords = sorted(skeleton_coordinates, key=lambda x: np.linalg.norm(x - pivot))
+    return np.array(sorted_coords[remove_1_side_n:-remove_1_side_n])
+
+
+def remove_skeleton_points_from_pivot(skeleton_coordinates, pivot, remove_rate):
+    remove_n = int(remove_rate * len(skeleton_coordinates))
+    sorted_coords = sorted(skeleton_coordinates, key=lambda x: np.linalg.norm(x - pivot))
+    return np.array(sorted_coords[remove_n:])
 
 
 def find_artery_skeleton_coordinates(mask):
@@ -57,7 +64,7 @@ def find_artery_skeleton_coordinates(mask):
     return skeleton_graph.coordinates[longest_path]
 
 
-def find_width_points_for_artery(artery_segment_coordinates: np.ndarray, normal_vec_window_sz=10, edge_points_remove_ratio=0.5, skeleton_coordinates=None) -> tuple[np.ndarray, np.ndarray]:
+def find_width_points_for_artery(artery_segment_coordinates: np.ndarray, normal_vec_window_sz=10, edge_points_remove_ratio=0.5, skeleton_coordinates=None, remove_pivot=None) -> tuple[np.ndarray, np.ndarray]:
     points_centered = artery_segment_coordinates
     inc = points_centered.min(axis=0)
     points_centered -= inc
@@ -69,10 +76,17 @@ def find_width_points_for_artery(artery_segment_coordinates: np.ndarray, normal_
         skeleton_coordinates = find_artery_skeleton_coordinates(mesh)
     else:
         skeleton_coordinates = skeleton_coordinates - inc
-    skeleton_coordinates = remove_edge_skeleton_points(skeleton_coordinates, remove_rate=edge_points_remove_ratio)
-    # plt.scatter(*artery_segment_coordinates.T)
-    # plt.scatter(*skeleton_coordinates.T)
-    # plt.show()
+    plt.scatter(*artery_segment_coordinates.T)
+    plt.scatter(*skeleton_coordinates.T)
+    plt.show()
+    if remove_pivot is not None:
+        # skeleton_coordinates = remove_skeleton_points_from_pivot(skeleton_coordinates, remove_pivot-inc, edge_points_remove_ratio)
+        skeleton_coordinates = remove_edge_skeleton_points_from_pivot(skeleton_coordinates, pivot=remove_pivot-inc, remove_rate=edge_points_remove_ratio)
+    # else:
+        # skeleton_coordinates = remove_edge_skeleton_points_from_pivot(skeleton_coordinates, remove_rate=edge_points_remove_ratio)
+    plt.scatter(*artery_segment_coordinates.T)
+    plt.scatter(*skeleton_coordinates.T)
+    plt.show()
     max_pair = find_diameter_from_skeleton(mesh, skeleton_coordinates, window_sz=normal_vec_window_sz)
     return max_pair[0] + inc[::-1], max_pair[1] + inc[::-1]
 
@@ -134,15 +148,28 @@ def find_best_path_for_clusters(clusters_points, clusters, skeleton_paths_coordi
     return d
 
 
+def intersect_paths_with_arteries(clusters_points, clusters, cluster_to_skeleton_coords_map):
+    d = {}
+    for c in np.unique(clusters):
+        points = clusters_points[clusters==c]
+        points_set = {tuple(point) for point in points}
+        path_points_set = {tuple(point) for point in cluster_to_skeleton_coords_map[c]}
+        d[c] = np.array(list(points_set & path_points_set))
+    return d
+
+
 def find_arteries_d(mask: Image.Image, config: Config) -> CVResult:
     mask_points = find_mask_points(mask)
     clusters = find_arteries(mask_points, mask.shape)
 
     top_paths = find_all_skeleton_paths(mask)
     best_paths = find_best_path_for_clusters(mask_points, clusters, top_paths)
+    best_paths = intersect_paths_with_arteries(mask_points, clusters, best_paths)
 
     cluster_centers = []
     point_pairs = []
+
+    remove_pivot = mask_points.mean(axis=0)
     for i in range(3):
         artery_points = mask_points[clusters==i]
         cluster_centers.append(np.mean(artery_points, axis=0))
@@ -150,7 +177,8 @@ def find_arteries_d(mask: Image.Image, config: Config) -> CVResult:
             artery_points, 
             normal_vec_window_sz=config.normal_vector_window_sz,
             edge_points_remove_ratio=config.skeleton_edge_points_remove_ratio,
-            skeleton_coordinates=best_paths[i]
+            skeleton_coordinates=best_paths[i],
+            remove_pivot=remove_pivot,
         )
         point_pairs.append(width_points)
     cluster_centers = np.array(cluster_centers)

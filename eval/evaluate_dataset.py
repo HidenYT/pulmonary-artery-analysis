@@ -49,7 +49,6 @@ def find_image_and_markup(folder: Path):
 
 
 def collect_dataset(root: Path):
-    print(1)
     dataset = []
 
     for folder in root.rglob("*"):

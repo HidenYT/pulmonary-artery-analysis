@@ -35,6 +35,3 @@ def main():
 
     pd.DataFrame(results).to_csv(args.output, index=False)
     print(f"Results saved to {args.output}")
-
-if __name__ == "__main__":
-    main()

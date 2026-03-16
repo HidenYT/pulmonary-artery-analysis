@@ -36,3 +36,8 @@ name = "cu129"
 url = "https://download.pytorch.org/whl/cu129"
 priority = "supplemental"
 
+[tool.poetry.scripts]
+eval-cli = "eval.main:main"
+
+[[tool.poetry.packages]]
+include = "eval"

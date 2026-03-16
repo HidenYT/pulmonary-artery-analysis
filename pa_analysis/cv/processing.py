@@ -76,17 +76,17 @@ def find_width_points_for_artery(artery_segment_coordinates: np.ndarray, normal_
         skeleton_coordinates = find_artery_skeleton_coordinates(mesh)
     else:
         skeleton_coordinates = skeleton_coordinates - inc
-    plt.scatter(*artery_segment_coordinates.T)
-    plt.scatter(*skeleton_coordinates.T)
-    plt.show()
+    # plt.scatter(*artery_segment_coordinates.T)
+    # plt.scatter(*skeleton_coordinates.T)
+    # plt.show()
     if remove_pivot is not None:
         # skeleton_coordinates = remove_skeleton_points_from_pivot(skeleton_coordinates, remove_pivot-inc, edge_points_remove_ratio)
         skeleton_coordinates = remove_edge_skeleton_points_from_pivot(skeleton_coordinates, pivot=remove_pivot-inc, remove_rate=edge_points_remove_ratio)
     # else:
         # skeleton_coordinates = remove_edge_skeleton_points_from_pivot(skeleton_coordinates, remove_rate=edge_points_remove_ratio)
-    plt.scatter(*artery_segment_coordinates.T)
-    plt.scatter(*skeleton_coordinates.T)
-    plt.show()
+    # plt.scatter(*artery_segment_coordinates.T)
+    # plt.scatter(*skeleton_coordinates.T)
+    # plt.show()
     max_pair = find_diameter_from_skeleton(mesh, skeleton_coordinates, window_sz=normal_vec_window_sz)
     return max_pair[0] + inc[::-1], max_pair[1] + inc[::-1]
 

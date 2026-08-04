@@ -12,15 +12,15 @@ def make_postanalysis(cv_result: CVResult, config: Config, meta: ImageMeta) -> P
 
     main_1, main_2 = cv_result.main_artery_points
     main_d_mm = np.linalg.norm((main_1 - main_2) * pixel_to_mm_multiplier)
-    main_problem = not(config.width_main_mm - config.diff_mm <= main_d_mm <= config.width_main_mm + config.diff_mm)
+    main_problem = not(config.max_width_main_mm <= main_d_mm)
     
     left_1, left_2 = cv_result.left_artery_points
     left_d_mm = np.linalg.norm((left_1 - left_2) * pixel_to_mm_multiplier)
-    left_problem = not(config.width_left_mm - config.diff_mm <= left_d_mm <= config.width_left_mm + config.diff_mm)
+    left_problem = not(config.max_width_left_mm <= left_d_mm)
     
     right_1, right_2 = cv_result.right_artery_points
     right_d_mm = np.linalg.norm((right_1 - right_2) * pixel_to_mm_multiplier)
-    right_problem = not(config.width_right_mm - config.diff_mm <= right_d_mm <= config.width_right_mm + config.diff_mm)
+    right_problem = not(config.max_width_right_mm <= right_d_mm)
 
     return PostAnalysisResult(
         main_artery_d=main_d_mm,

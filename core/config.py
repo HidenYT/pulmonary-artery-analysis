@@ -6,15 +6,15 @@ CONFIG_PATH = Path("data/config.json")
 
 
 class Config(BaseModel):
-    width_main_mm: float = 27
-    width_left_mm: float = 27
-    width_right_mm: float = 27
-    diff_mm: float = 1
+    max_width_main_mm: float = Field(27, description="Макс. диаметр главной артерии, мм")
+    max_width_left_mm: float = Field(27, description="Макс. диаметр левой артерии, мм")
+    max_width_right_mm: float = Field(27, description="Макс. диаметр правой артерии, мм")
 
     doctor_full_name: str = Field("", description="Имя врача")
 
     normal_vector_window_sz: int = Field(10, description="Окно вычисления вектора диаметра артерии")
-    skeleton_edge_points_remove_ratio: float = Field(0.5, description="Доля удаляемых крайних точек скелета артерии")
+    skeleton_center_points_remove_ratio: float = Field(0.3, description="Доля удаляемых точек скелета артерии от центра")
+    skeleton_points_remove_from_edge_ratio: float = Field(0.2, description="Доля удаляемых точек скелета артерии с краю")
     classification_threshold: float = Field(0.51, description="Порог классификации")
 
 

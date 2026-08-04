@@ -4,6 +4,8 @@ from skimage import morphology, measure
 
 def clean_mask(mask):
 
+    mask = morphology.binary_closing(mask.astype(bool), footprint=np.ones((50, 50)))
+
     mask = morphology.remove_small_objects(mask.astype(bool), 100)
 
     labeled = measure.label(mask)
